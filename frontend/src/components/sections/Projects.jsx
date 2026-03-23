@@ -67,21 +67,37 @@ const Projects = () => {
   ];
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
     const fetchProjects = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/projects`, {
+          signal: controller.signal
+        });
         if (!res.ok) throw new Error('Failed to fetch projects');
         const data = await res.json();
-        setProjects(data.length > 0 ? data : fallbackProjects);
-        setLoading(false);
+
+        // Handle both array payloads and wrapped payloads like { projects: [...] }
+        const projectList = Array.isArray(data)
+          ? data
+          : (Array.isArray(data?.projects) ? data.projects : []);
+
+        setProjects(projectList.length > 0 ? projectList : fallbackProjects);
       } catch (err) {
         console.error("API fetch failed, using fallback data", err);
         setProjects(fallbackProjects);
+      } finally {
         setLoading(false);
       }
     };
 
     fetchProjects();
+
+    return () => {
+      clearTimeout(timeoutId);
+      controller.abort();
+    };
   }, []);
 
   return (
