@@ -8,6 +8,19 @@ const Projects = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const normalizeImageUrl = (imageUrl) => {
+    if (!imageUrl || typeof imageUrl !== 'string') return '';
+
+    const trimmed = imageUrl.trim();
+    const corrected = trimmed.replace(/dashbaord/gi, 'dashboard');
+
+    if (/^https?:\/\//i.test(corrected) || corrected.startsWith('/')) {
+      return corrected;
+    }
+
+    return `/${corrected}`;
+  };
+
   // Fallback data if API fails
   const fallbackProjects = [
     {
@@ -83,10 +96,21 @@ const Projects = () => {
           ? data
           : (Array.isArray(data?.projects) ? data.projects : []);
 
-        setProjects(projectList.length > 0 ? projectList : fallbackProjects);
+        const selectedProjects = projectList.length > 0 ? projectList : fallbackProjects;
+        setProjects(
+          selectedProjects.map((project) => ({
+            ...project,
+            imageUrl: normalizeImageUrl(project.imageUrl)
+          }))
+        );
       } catch (err) {
         console.error("API fetch failed, using fallback data", err);
-        setProjects(fallbackProjects);
+        setProjects(
+          fallbackProjects.map((project) => ({
+            ...project,
+            imageUrl: normalizeImageUrl(project.imageUrl)
+          }))
+        );
       } finally {
         setLoading(false);
       }
