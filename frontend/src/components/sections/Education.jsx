@@ -34,7 +34,7 @@ const Education = () => {
       degree: 'Bachelor of Technology',
       institution: 'Lovely Professional University, Phagwara, Punjab',
       duration: 'Aug 2023 - Present',
-      details: 'Computer Science and Engineering; CGPA: 6.10',
+      details: 'Computer Science and Engineering; CGPA: 6.34',
       icon: '🎓'
     },
     {
