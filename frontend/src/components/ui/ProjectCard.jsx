@@ -1,12 +1,37 @@
+import { useEffect, useState } from 'react';
+
+const DEFAULT_PROJECT_IMAGE = 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop';
+
+const toSafeImageSrc = (rawSrc) => {
+  if (!rawSrc || typeof rawSrc !== 'string') return DEFAULT_PROJECT_IMAGE;
+
+  const trimmed = rawSrc.trim();
+  if (!trimmed) return DEFAULT_PROJECT_IMAGE;
+
+  // Keep absolute URLs untouched; encode only local/static paths.
+  if (/^https?:\/\//i.test(trimmed) || trimmed.startsWith('data:')) {
+    return trimmed;
+  }
+
+  return encodeURI(trimmed);
+};
+
 const ProjectCard = ({ project }) => {
+  const [imgSrc, setImgSrc] = useState(toSafeImageSrc(project.imageUrl));
+
+  useEffect(() => {
+    setImgSrc(toSafeImageSrc(project.imageUrl));
+  }, [project.imageUrl]);
+
   return (
     <div className="glass rounded-2xl overflow-hidden group hover:-translate-y-2 transition-transform duration-300 h-full flex flex-col">
       <div className="relative h-48 overflow-hidden">
         <div className="absolute inset-0 bg-brand/20 group-hover:bg-transparent transition-colors z-10"></div>
         <img 
-          src={project.imageUrl || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1000&auto=format&fit=crop'} 
+          src={imgSrc}
           alt={project.title} 
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+          onError={() => setImgSrc(DEFAULT_PROJECT_IMAGE)}
         />
       </div>
       

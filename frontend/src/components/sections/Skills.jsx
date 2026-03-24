@@ -13,7 +13,7 @@ const Skills = () => {
     },
     {
       title: 'Tools & Platforms',
-      items: ['Power BI', 'Tableau', 'SQL Server', 'Excel', 'Jupyter Notebook', ' MongoDB', 'Jupyter Notebook', 'MS-Office', 'Git', 'GitHub']
+      items: ['Power BI', 'Tableau', 'SQL Server', 'Excel', 'Jupyter Notebook', ' MongoDB', 'MS-Office', 'Git', 'GitHub']
     },
     {
       title: 'Soft Skills',

@@ -9,9 +9,13 @@ const messageRoutes = require('../routes/messageRoutes');
 
 const app = express();
 
+let isDBConnected = false;
+
 // Connect to MongoDB
 if (process.env.MONGO_URI) {
-    connectDB();
+    connectDB().then(conn => {
+        if (conn) isDBConnected = true;
+    });
 } else {
     console.warn('MONGO_URI is missing. Database connection skipped.');
 }
@@ -19,6 +23,12 @@ if (process.env.MONGO_URI) {
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Pass connection status to routes
+app.use((req, res, next) => {
+    req.isDBConnected = isDBConnected;
+    next();
+});
 
 // API Routes
 app.use('/api/projects', projectRoutes);

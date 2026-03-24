@@ -3,81 +3,85 @@ import Tilt from 'react-parallax-tilt';
 import ProjectCard from '../ui/ProjectCard';
 import AnimatedSection from '../ui/AnimatedSection';
 
+const normalizeImageUrl = (imageUrl) => {
+  if (!imageUrl || typeof imageUrl !== 'string') return '';
+
+  const trimmed = imageUrl.trim();
+  const corrected = trimmed.replace(/dashbaord/gi, 'dashboard');
+
+  // Map common variants to the real file available in public/
+  if (/system\s*monitoring\s*dashboard\.png/i.test(corrected)) {
+    return '/Screenshot 2025-12-21 202500.png';
+  }
+
+  if (/^https?:\/\//i.test(corrected) || corrected.startsWith('/')) {
+    return corrected;
+  }
+
+  return `/${corrected}`;
+};
+
+// Fallback data if API fails
+const fallbackProjects = [
+  {
+    _id: '1',
+    title: 'AI Karaoke Song Selector',
+    description: 'An AI-powered web app using Flask and Hugging Face API (Mistral-7B) to recommend songs based on users vocal ranges.',
+    techStack: ['Python', 'Flask', 'Hugging Face API', 'JS'],
+    githubLink: 'https://github.com/HimanshuChaudharii/AI-Project-Ai-Karaoke-Song-Selector',
+    liveLink: '',
+    imageUrl: '/karaoke-ai.png'
+  },
+  {
+    _id: '2',
+    title: 'Traffic Data Analysis',
+    description: 'Conducted EDA on NYC MTA AADT (2008–2021) traffic data to identify seasonal/COVID patterns and automated monthly pipelines.',
+    techStack: ['Python', 'Pandas', 'NumPy', 'Seaborn', 'Matplotlib'],
+    githubLink: 'https://github.com/HimanshuChaudharii/PythonProjectINT375',
+    liveLink: '',
+    imageUrl: '/traffic-data.png'
+  },
+  {
+    _id: '3',
+    title: 'SpotMyStay',
+    description: 'A full-stack hostel discovery and booking platform with secure JWT authentication, admin/owner dashboards, and property listing management workflows.',
+    techStack: ['React', 'Vite', 'Express', 'Node.js', 'MongoDB'],
+    githubLink: 'https://github.com/HimanshuChaudharii/spotmystay',
+    liveLink: '',
+    imageUrl: '/spotmystay.png'
+  },
+  {
+    _id: '4',
+    title: 'System monitoring dashboard',
+    description: 'To provide a clear, KPI-driven view of insurance performance by analyzing Total Policies, Total Claim Amount, Claim Frequency, and Average Claim Amount, while identifying risk trends across demographics, vehicles, and coverage zones.',
+    techStack: ['Power BI'],
+    githubLink: 'https://github.com/HimanshuChaudharii/System-monitoring-dashboard',
+    liveLink: '',
+    imageUrl: '/Screenshot 2025-12-21 202500.png'
+  },
+  {
+    _id: '5',
+    title: 'AGRILIVE – Mandi Price Predictive Analytics.',
+    description: 'Designed a data-driven pricing intelligence system for agricultural markets using machine learning techniques. The solution transforms raw mandi data into actionable insights through regression and classification models.',
+    techStack: ['Python', 'Predictive Analytics'],
+    githubLink: 'https://www.linkedin.com/posts/himanshu-chaudhari-4868a9298_analytics-datascience-machinelearning-activity-7406397885220556800-IQJW?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEgJCWYBTh7gnof8XhqZMtLeNWZ9FcbDwm8',
+    liveLink: '',
+    imageUrl: 'Smart farming_ AI-driven pricing analytics.png'
+  },
+  {
+    _id: '6',
+    title: 'QR-Code project',
+    description: 'To design and develop a system that can generate and scan QR codes for storing and retrieving information efficiently using modern programming techniques.',
+    techStack: ['MERN Stack'],
+    githubLink: 'https://github.com/HimanshuChaudharii/Qr-code-Project',
+    liveLink: '',
+    imageUrl: 'QR code generator and scanner setup.png'
+  },
+];
+
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const normalizeImageUrl = (imageUrl) => {
-    if (!imageUrl || typeof imageUrl !== 'string') return '';
-
-    const trimmed = imageUrl.trim();
-    const corrected = trimmed.replace(/dashbaord/gi, 'dashboard');
-
-    if (/^https?:\/\//i.test(corrected) || corrected.startsWith('/')) {
-      return corrected;
-    }
-
-    return `/${corrected}`;
-  };
-
-  // Fallback data if API fails
-  const fallbackProjects = [
-    {
-      _id: '1',
-      title: 'AI Karaoke Song Selector',
-      description: 'An AI-powered web app using Flask and Hugging Face API (Mistral-7B) to recommend songs based on users vocal ranges.',
-      techStack: ['Python', 'Flask', 'Hugging Face API', 'JS'],
-      githubLink: 'https://github.com/HimanshuChaudharii/AI-Project-Ai-Karaoke-Song-Selector',
-      liveLink: '',
-      imageUrl: '/karaoke-ai.png'
-    },
-    {
-      _id: '2',
-      title: 'Traffic Data Analysis',
-      description: 'Conducted EDA on NYC MTA AADT (2008–2021) traffic data to identify seasonal/COVID patterns and automated monthly pipelines.',
-      techStack: ['Python', 'Pandas', 'NumPy', 'Seaborn', 'Matplotlib'],
-      githubLink: 'https://github.com/HimanshuChaudharii/PythonProjectINT375',
-      liveLink: '',
-      imageUrl: '/traffic-data.png'
-    },
-    {
-      _id: '3',
-      title: 'SpotMyStay',
-      description: 'A full-stack hostel discovery and booking platform with secure JWT authentication, admin/owner dashboards, and property listing management workflows.',
-      techStack: ['React', 'Vite', 'Express', 'Node.js', 'MongoDB'],
-      githubLink: 'https://github.com/HimanshuChaudharii/spotmystay',
-      liveLink: '',
-      imageUrl: '/spotmystay.png'
-    },
-    {
-      _id: '4',
-      title: 'System monitoring dashboard',
-      description: 'To provide a clear, KPI-driven view of insurance performance by analyzing Total Policies, Total Claim Amount, Claim Frequency, and Average Claim Amount, while identifying risk trends across demographics, vehicles, and coverage zones.',
-      techStack: ['Power BI'],
-      githubLink: 'https://github.com/HimanshuChaudharii/System-monitoring-dashboard',
-      liveLink: '',
-      imageUrl: 'System monitoring dashbaord.png'
-    },
-    {
-      _id: '5',
-      title: 'AGRILIVE – Mandi Price Predictive Analytics.',
-      description: 'Designed a data-driven pricing intelligence system for agricultural markets using machine learning techniques. The solution transforms raw mandi data into actionable insights through regression and classification models.',
-      techStack: ['Python', 'Predictive Analytics'],
-      githubLink: 'https://www.linkedin.com/posts/himanshu-chaudhari-4868a9298_analytics-datascience-machinelearning-activity-7406397885220556800-IQJW?utm_source=share&utm_medium=member_desktop&rcm=ACoAAEgJCWYBTh7gnof8XhqZMtLeNWZ9FcbDwm8',
-      liveLink: '',
-      imageUrl: 'Smart farming_ AI-driven pricing analytics.png'
-    },
-    {
-      _id: '6',
-      title: 'QR-Code project',
-      description: 'To design and develop a system that can generate and scan QR codes for storing and retrieving information efficiently using modern programming techniques.',
-      techStack: ['MERN Stack'],
-      githubLink: 'https://github.com/HimanshuChaudharii/Qr-code-Project',
-      liveLink: '',
-      imageUrl: 'QR code generator and scanner setup.png'
-    },
-  ];
 
   useEffect(() => {
     const controller = new AbortController();

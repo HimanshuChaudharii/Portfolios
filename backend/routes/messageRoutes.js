@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/Message');
 
+const MOCK_MESSAGES = [];
+
 // @route   POST /api/messages
 // @desc    Send a message
 router.post('/', async (req, res) => {
@@ -11,11 +13,18 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Please provide all fields' });
         }
         
+        if (!req.isDBConnected) {
+            console.log('DB disconnected. Storing message in-memory:', { name, email });
+            MOCK_MESSAGES.push({ name, email, message, createdAt: new Date() });
+            return res.status(201).json({ message: 'Message sent successfully (Mock Mode)' });
+        }
+
         const newMessage = new Message({ name, email, message });
         await newMessage.save();
         
         res.status(201).json({ message: 'Message sent successfully' });
     } catch (error) {
+        console.error('Message save error:', error.message);
         res.status(500).json({ message: 'Server Error' });
     }
 });
